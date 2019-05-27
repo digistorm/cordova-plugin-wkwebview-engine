@@ -65,6 +65,24 @@
     return self;
 }
 
+// RICHARD inject cookie
+- (void)injectCookie:(CDVInvokedUrlCommand*)command;
+{
+    NSDictionary *properties = [NSDictionary dictionaryWithObjectsAndKeys:
+                                command.arguments[0], NSHTTPCookieDomain,
+                                command.arguments[1], NSHTTPCookiePath,
+                                command.arguments[2], NSHTTPCookieName,
+                                command.arguments[3], NSHTTPCookieValue,
+                                nil];
+    NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties:properties];
+    if (@available(iOS 11.0, *)) {
+        WKWebView* wkWebView = (WKWebView*) self.engineWebView;
+        [wkWebView.configuration.websiteDataStore.httpCookieStore setCookie:cookie completionHandler:nil];
+    } else {
+        // Fallback on earlier versions
+    }
+}
+
 - (WKWebViewConfiguration*) createConfigurationFromSettings:(NSDictionary*)settings
 {
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
